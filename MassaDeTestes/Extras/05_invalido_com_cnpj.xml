@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nfeProc xmlns="http://www.portalfiscal.inf.br/nfe" versao="4.00">
+  <NFe>
+    <infNFe Id="NFe35260912345678000195650010000000051100000058" versao="4.00">
+      <ide>
+        <cUF>35</cUF>
+        <cNF>10000005</cNF>
+        <natOp>VENDA AO CONSUMIDOR</natOp>
+        <mod>65</mod>
+        <serie>1</serie>
+        <nNF>5</nNF>
+        <dhEmi>2026-09-20T11:45:00-03:00</dhEmi>
+        <tpNF>1</tpNF>
+        <idDest>1</idDest>
+        <cMunFG>3529005</cMunFG>
+        <tpImp>4</tpImp>
+        <tpEmis>1</tpEmis>
+        <cDV>8</cDV>
+        <tpAmb>2</tpAmb>
+        <finNFe>1</finNFe>
+        <indFinal>1</indFinal>
+        <indPres>1</indPres>
+        <procEmi>0</procEmi>
+        <verProc>1.0</verProc>
+      </ide>
+      <emit>
+        <CNPJ>12345678000195</CNPJ>
+        <xNome>LOJA EXEMPLO LTDA</xNome>
+        <IE>123456789110</IE>
+        <CRT>1</CRT>
+      </emit>
+      <dest>
+        <CNPJ>11222333000181</CNPJ>
+        <xNome>EMPRESA COMPRADORA LTDA</xNome>
+        <indIEDest>9</indIEDest>
+      </dest>
+      <det nItem="1">
+        <prod>
+          <cProd>001</cProd>
+          <xProd>PRODUTO EXEMPLO</xProd>
+          <NCM>21069090</NCM>
+          <CFOP>5102</CFOP>
+          <uCom>UN</uCom>
+          <qCom>1.0000</qCom>
+          <vUnCom>1200.00</vUnCom>
+          <vProd>1200.00</vProd>
+        </prod>
+      </det>
+      <total>
+        <ICMSTot>
+          <vProd>1200.00</vProd>
+          <vNF>1200.00</vNF>
+        </ICMSTot>
+      </total>
+    </infNFe>
+  </NFe>
+  <protNFe versao="4.00">
+    <infProt>
+      <chNFe>35260912345678000195650010000000051100000058</chNFe>
+      <cStat>100</cStat>
+      <xMotivo>Autorizado o uso da NF-e</xMotivo>
+    </infProt>
+  </protNFe>
+</nfeProc>
