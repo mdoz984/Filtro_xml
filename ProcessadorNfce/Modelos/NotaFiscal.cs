@@ -23,9 +23,6 @@ public sealed class NotaFiscal
     /// <summary>Data/hora de emissão da tag &lt;ide&gt;&lt;dhEmi&gt;, com o fuso horário informado no XML.</summary>
     public required DateTimeOffset DataEmissao { get; init; }
 
-    /// <summary>Valor total da nota, tag &lt;total&gt;&lt;ICMSTot&gt;&lt;vNF&gt;.</summary>
-    public required decimal Valor { get; init; }
-
     /// <summary>CPF do comprador (&lt;dest&gt;&lt;CPF&gt;), ou null quando não informado.</summary>
     public string? CpfDestinatario { get; init; }
 

@@ -8,7 +8,7 @@ namespace ProcessadorNfce.Servicos;
 
 /// <summary>
 /// O arquivo é um XML bem formado, mas não tem a estrutura esperada de uma NFC-e
-/// (falta uma tag obrigatória, a chave é inválida, o valor não é numérico etc.).
+/// (falta uma tag obrigatória, a chave é inválida, a data não é válida etc.).
 /// </summary>
 public sealed class NotaInvalidaException(string mensagem) : Exception(mensagem);
 
@@ -21,7 +21,6 @@ public sealed class NotaInvalidaException(string mensagem) : Exception(mensagem)
 ///   infNFe/ide/serie              -> série
 ///   infNFe/ide/dhEmi              -> data de emissão (competência)
 ///   infNFe/dest/CPF | dest/CNPJ   -> identificação do comprador
-///   infNFe/total/ICMSTot/vNF      -> valor total da nota
 /// </summary>
 public static class LeitorXmlNfce
 {
@@ -48,9 +47,8 @@ public static class LeitorXmlNfce
             Arquivo = Path.GetFileName(caminhoArquivo),
             Chave = LerChave(infNFe),
             Modelo = TextoObrigatorio(Filho(ide, "mod"), "<ide><mod>"),
-            Serie =TextoObrigatorio(Filho(ide, "serie"), "<ide><serie>"),
+            Serie = TextoObrigatorio(Filho(ide, "serie"), "<ide><serie>"),
             DataEmissao = LerDataEmissao(ide),
-            Valor = LerValor(infNFe),
             CpfDestinatario = Texto(Filho(dest, "CPF")),
             CnpjDestinatario = Texto(Filho(dest, "CNPJ")),
         };
@@ -113,20 +111,6 @@ public static class LeitorXmlNfce
             throw new NotaInvalidaException($"data de emissão inválida em <dhEmi> (\"{texto}\")");
 
         return data;
-    }
-
-    /// <summary>Valor total da nota da tag &lt;total&gt;&lt;ICMSTot&gt;&lt;vNF&gt;, ex.: "150.45".</summary>
-    private static decimal LerValor(XElement infNFe)
-    {
-        XElement? vNF = Filho(Filho(Filho(infNFe, "total"), "ICMSTot"), "vNF");
-        string texto = TextoObrigatorio(vNF, "<total><ICMSTot><vNF>");
-
-        // O padrão da SEFAZ sempre usa ponto como separador decimal, por isso InvariantCulture
-        // (com a cultura pt-BR, "150.45" seria lido como 15045).
-        if (!decimal.TryParse(texto, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out decimal valor))
-            throw new NotaInvalidaException($"valor inválido em <vNF> (\"{texto}\")");
-
-        return valor;
     }
 
     // ---------- Funções auxiliares ----------

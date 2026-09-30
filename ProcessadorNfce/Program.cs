@@ -115,7 +115,6 @@ static string? PerguntarCompetencia()
 // Mostra o resumo do processamento e o destino de cada arquivo.
 static void MostrarRelatorio(ResultadoProcessamento resultado, string caminhoSaida)
 {
-    var ptBr = CultureInfo.GetCultureInfo("pt-BR");
     int total = resultado.Aprovadas.Count + resultado.Descartadas.Count + resultado.Erros.Count;
 
     Console.WriteLine();
@@ -127,7 +126,7 @@ static void MostrarRelatorio(ResultadoProcessamento resultado, string caminhoSai
     Console.WriteLine();
 
     foreach (NotaFiscal nota in resultado.Aprovadas)
-        Escrever(ConsoleColor.Green, "[ENVIADO]    ", $"{nota.Arquivo} - chave {nota.Chave} - R$ {nota.Valor.ToString("N2", ptBr)}");
+        Escrever(ConsoleColor.Green, "[ENVIADO]    ", nota.Arquivo);
 
     foreach (ArquivoIgnorado item in resultado.Descartadas)
         Escrever(ConsoleColor.Yellow, "[DESCARTADO] ", $"{item.Arquivo} - {item.Motivo}");
@@ -139,8 +138,7 @@ static void MostrarRelatorio(ResultadoProcessamento resultado, string caminhoSai
     if (total == 0)
         Console.WriteLine("Nenhum arquivo .xml encontrado na pasta.");
 
-    decimal soma = resultado.Aprovadas.Sum(n => n.Valor);
-    Console.WriteLine($"Arquivo gerado: {caminhoSaida} ({resultado.Aprovadas.Count} nota(s), total R$ {soma.ToString("N2", ptBr)})");
+    Console.WriteLine($"Arquivo gerado: {caminhoSaida} ({resultado.Aprovadas.Count} nota(s))");
 }
 
 // Escreve uma linha com um rótulo colorido.
@@ -161,7 +159,6 @@ static void MostrarErro(string mensagem)
 // Mantém a janela aberta quando o programa é aberto com duplo clique no .exe.
 static void AguardarEnter()
 {
-    if (Console.IsInputRedirected) return;
     Console.WriteLine();
     Console.Write("Pressione ENTER para sair...");
     Console.ReadLine();

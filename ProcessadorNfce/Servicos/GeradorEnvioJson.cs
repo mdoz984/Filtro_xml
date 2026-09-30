@@ -17,7 +17,7 @@ public static class GeradorEnvioJson
     public static void Gerar(IEnumerable<NotaFiscal> notas, string caminhoSaida)
     {
         List<NotaEnvio> envio = notas
-            .Select(nota => new NotaEnvio(nota.Chave, nota.Competencia, nota.Valor))
+            .Select(nota => new NotaEnvio(nota.Chave, nota.Competencia))
             .ToList();
 
         string json = JsonSerializer.Serialize(envio, Opcoes);

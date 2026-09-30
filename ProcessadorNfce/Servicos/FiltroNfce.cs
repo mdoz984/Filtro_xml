@@ -32,24 +32,22 @@ public sealed class FiltroNfce(string serie, string competencia)
         // Pré-requisito - Modelo: o processador trata apenas NFC-e (modelo 65).
         // A NF-e (modelo 55) usa o mesmo layout de XML, mas é outro documento fiscal.
         if (nota.Modelo != ModeloNfce)
-            return nota.Modelo == "55"
-                ? "modelo 55 (NF-e), não é NFC-e (modelo 65)"
-                : $"modelo {nota.Modelo}, não é NFC-e (modelo 65)";
+            return $"modelo {nota.Modelo}";
 
         // Critério 2 - Série: deve corresponder exatamente à série informada.
         if (nota.Serie != Serie)
-            return $"série {nota.Serie} diferente da informada ({Serie})";
+            return $"série {nota.Serie}";
 
         // Critério 3 - Competência: ano e mês da emissão devem ser os informados.
         if (nota.Competencia != Competencia)
-            return $"competência {nota.Competencia} diferente da informada ({Competencia})";
+            return $"competência {nota.Competencia}";
 
         // Critério 4 - Consumidor final: o comprador não pode estar identificado.
         if (nota.CpfDestinatario is not null)
-            return "comprador identificado por CPF em <dest><CPF> (não é consumidor final)";
+            return "tem CPF";
 
         if (nota.CnpjDestinatario is not null)
-            return "comprador identificado por CNPJ em <dest><CNPJ> (não é consumidor final)";
+            return "tem CNPJ";
 
         return null; // passou em todos os critérios
     }

@@ -39,15 +39,14 @@ public sealed class ProcessadorNotas(string pastaXml)
                 if (motivo is not null)
                     resultado.Descartadas.Add(new ArquivoIgnorado(nomeArquivo, motivo));
                 else if (!chavesAprovadas.Add(nota.Chave))
-                    resultado.Descartadas.Add(new ArquivoIgnorado(nomeArquivo, "nota duplicada (mesma chave de outro arquivo)"));
+                    resultado.Descartadas.Add(new ArquivoIgnorado(nomeArquivo, "nota duplicada"));
                 else
                     resultado.Aprovadas.Add(nota);
             }
             // Cada tipo de problema vira uma mensagem clara no relatório, e seguimos para o próximo arquivo.
             catch (XmlException ex)
             {
-                resultado.Erros.Add(new ArquivoIgnorado(nomeArquivo,
-                    $"XML corrompido ou mal formado (linha {ex.LineNumber}, posição {ex.LinePosition})"));
+                resultado.Erros.Add(new ArquivoIgnorado(nomeArquivo, $"XML corrompido (linha {ex.LineNumber})"));
             }
             catch (NotaInvalidaException ex)
             {
@@ -55,12 +54,12 @@ public sealed class ProcessadorNotas(string pastaXml)
             }
             catch (UnauthorizedAccessException)
             {
-                resultado.Erros.Add(new ArquivoIgnorado(nomeArquivo, "sem permissão de leitura no arquivo"));
+                resultado.Erros.Add(new ArquivoIgnorado(nomeArquivo, "sem permissão de leitura"));
             }
-            catch (IOException ex)
+            catch (IOException)
             {
                 // Ex.: arquivo aberto/bloqueado por outro programa.
-                resultado.Erros.Add(new ArquivoIgnorado(nomeArquivo, $"erro ao ler o arquivo: {ex.Message}"));
+                resultado.Erros.Add(new ArquivoIgnorado(nomeArquivo, "erro ao ler o arquivo"));
             }
         }
 
