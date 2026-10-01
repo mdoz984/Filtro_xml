@@ -6,10 +6,7 @@ using ProcessadorNfce.Modelos;
 
 namespace ProcessadorNfce.Servicos;
 
-/// <summary>
-/// O arquivo é um XML bem formado, mas não tem a estrutura esperada de uma NFC-e
-/// (falta uma tag obrigatória, a chave é inválida, a data não é válida etc.).
-/// </summary>
+
 public sealed class NotaInvalidaException(string mensagem) : Exception(mensagem);
 
 /// <summary>
@@ -40,7 +37,7 @@ public static class LeitorXmlNfce
             ?? throw new NotaInvalidaException("tag <infNFe> não encontrada, o arquivo não é uma NFC-e");
 
         XElement? ide = Filho(infNFe, "ide");
-        XElement? dest = Filho(infNFe, "dest"); // na venda para consumidor final essa tag costuma nem existir
+        XElement? dest = Filho(infNFe, "dest"); 
 
         return new NotaFiscal
         {
@@ -54,22 +51,15 @@ public static class LeitorXmlNfce
         };
     }
 
-    /// <summary>
-    /// Carrega o XML do disco tratando as variações de codificação mais comuns.
-    /// </summary>
     private static XDocument CarregarXml(string caminhoArquivo)
     {
         try
         {
-            // XDocument.Load detecta a codificação sozinho, pelo BOM ou pela
-            // declaração <?xml ... encoding="UTF-8"?> / encoding="ISO-8859-1".
             return XDocument.Load(caminhoArquivo);
         }
         catch (XmlException erroOriginal)
         {
-            // Alguns sistemas gravam o arquivo em ISO-8859-1 (Latin-1), mas declaram UTF-8.
-            // Aí os acentos (ex.: "SÃO JOSÉ") quebram a leitura. Tentamos mais uma vez
-            // interpretando os bytes como Latin-1 antes de considerar o arquivo corrompido.
+
             try
             {
                 string conteudo = File.ReadAllText(caminhoArquivo, Encoding.Latin1);
@@ -77,23 +67,16 @@ public static class LeitorXmlNfce
             }
             catch (XmlException)
             {
-                // Continua inválido: o arquivo está mesmo corrompido. Repassamos o erro original.
                 throw erroOriginal;
             }
         }
     }
 
-    /// <summary>
-    /// Chave de acesso: atributo Id de &lt;infNFe&gt;, que vem como "NFe" + 44 dígitos.
-    /// Composição dos 44 dígitos: UF(2) + AAMM(4) + CNPJ emitente(14) + modelo(2) +
-    /// série(3) + número(9) + tipo de emissão(1) + código numérico(8) + dígito verificador(1).
-    /// </summary>
     private static string LerChave(XElement infNFe)
     {
         string id = infNFe.Attribute("Id")?.Value.Trim()
             ?? throw new NotaInvalidaException("atributo Id da tag <infNFe> não encontrado");
 
-        // Remove o prefixo "NFe", caso venha incorporado.
         string chave = id.StartsWith("NFe", StringComparison.OrdinalIgnoreCase) ? id[3..] : id;
 
         if (chave.Length != 44 || !chave.All(char.IsAsciiDigit))
@@ -102,7 +85,7 @@ public static class LeitorXmlNfce
         return chave;
     }
 
-    /// <summary>Data de emissão da tag &lt;dhEmi&gt;, ex.: "2026-09-15T10:30:00-03:00".</summary>
+
     private static DateTimeOffset LerDataEmissao(XElement? ide)
     {
         string texto = TextoObrigatorio(Filho(ide, "dhEmi"), "<ide><dhEmi>");
@@ -113,17 +96,11 @@ public static class LeitorXmlNfce
         return data;
     }
 
-    // ---------- Funções auxiliares ----------
-
-    /// <summary>Primeiro filho direto com o nome informado (ignorando o namespace), ou null.</summary>
     private static XElement? Filho(XElement? pai, string nome) =>
         pai?.Elements().FirstOrDefault(e => e.Name.LocalName == nome);
 
-    /// <summary>Texto da tag sem espaços, ou null se a tag não existir ou estiver vazia.</summary>
     private static string? Texto(XElement? elemento) =>
         string.IsNullOrWhiteSpace(elemento?.Value) ? null : elemento.Value.Trim();
-
-    /// <summary>Texto da tag; lança erro se ela não existir ou estiver vazia.</summary>
     private static string TextoObrigatorio(XElement? elemento, string descricaoTag) =>
         Texto(elemento) ?? throw new NotaInvalidaException($"tag {descricaoTag} não encontrada ou vazia");
 }

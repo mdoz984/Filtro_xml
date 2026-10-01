@@ -1,24 +1,12 @@
-// =====================================================================
-//  PROCESSADOR DE NFC-e (modelo 65)
-//  Fábrica de Projetos | 4º Termo ADS — UNIMAR
-//
-//  Lê os XMLs de C:\XmlNfce, seleciona as notas de CONSUMIDOR FINAL
-//  (sem CPF/CNPJ do comprador) da série e competência informadas
-//  e gera o arquivo envio.json para a API externa.
-// =====================================================================
-
 using System.Globalization;
 using System.Text;
 using ProcessadorNfce.Modelos;
 using ProcessadorNfce.Servicos;
 
-// Pasta onde a empresa armazena obrigatoriamente os XMLs (definida no enunciado).
 const string PastaXml = @"C:\XmlNfce";
-// O envio.json é gravado na mesma pasta dos XMLs.
+
 const string NomeArquivoSaida = "envio.json";
 
-// Mostra acentos corretamente no console e habilita codificações antigas
-// (ex.: windows-1252) caso algum XML venha declarado assim.
 Console.OutputEncoding = Encoding.UTF8;
 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
@@ -28,7 +16,6 @@ Console.WriteLine("==================================================");
 Console.WriteLine($"Pasta dos XMLs: {PastaXml}");
 Console.WriteLine();
 
-// ---------- 1. Parâmetros de entrada ----------
 string? serie = PerguntarSerie();
 string? competencia = serie is null ? null : PerguntarCompetencia();
 
@@ -38,21 +25,19 @@ if (serie is null || competencia is null)
     return 1;
 }
 
-// ---------- 2. Processamento ----------
 int codigoSaida;
 try
 {
     var processador = new ProcessadorNotas(PastaXml);
     ResultadoProcessamento resultado = processador.Processar(new FiltroNfce(serie, competencia));
 
-    // ---------- 3. Saída ----------
     string caminhoSaida = Path.Combine(PastaXml, NomeArquivoSaida);
     GeradorEnvioJson.Gerar(resultado.Aprovadas, caminhoSaida);
 
     MostrarRelatorio(resultado, caminhoSaida);
     codigoSaida = 0;
 }
-// Problemas com a pasta em si (os problemas de cada arquivo são tratados no ProcessadorNotas).
+
 catch (DirectoryNotFoundException)
 {
     MostrarErro($"A pasta {PastaXml} não existe. Crie a pasta e coloque os XMLs das notas nela.");
@@ -73,11 +58,7 @@ AguardarEnter();
 return codigoSaida;
 
 
-// =====================================================================
-//  Funções auxiliares do console
-// =====================================================================
 
-// Pede a série até o usuário digitar um valor válido. Retorna null se a entrada acabar.
 static string? PerguntarSerie()
 {
     while (true)
@@ -86,8 +67,7 @@ static string? PerguntarSerie()
         string? entrada = Console.ReadLine();
         if (entrada is null) return null;
 
-        // A série da NFC-e vai de 0 a 999 e, no XML, é gravada sem zeros à esquerda ("1", nunca "001").
-        // Por isso aceitamos "001" e normalizamos para "1" antes de comparar com a tag <serie>.
+        
         if (int.TryParse(entrada.Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out int numero) && numero <= 999)
             return numero.ToString(CultureInfo.InvariantCulture);
 
@@ -95,7 +75,7 @@ static string? PerguntarSerie()
     }
 }
 
-// Pede a competência (AAAA-MM) até ser válida. Retorna null se a entrada acabar.
+
 static string? PerguntarCompetencia()
 {
     while (true)
@@ -104,7 +84,7 @@ static string? PerguntarCompetencia()
         string? entrada = Console.ReadLine();
         if (entrada is null) return null;
 
-        // TryParseExact valida o formato e o mês (01 a 12) de uma só vez.
+        
         if (DateTime.TryParseExact(entrada.Trim(), "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime data))
             return data.ToString("yyyy-MM", CultureInfo.InvariantCulture);
 
@@ -112,7 +92,7 @@ static string? PerguntarCompetencia()
     }
 }
 
-// Mostra o resumo do processamento e o destino de cada arquivo.
+
 static void MostrarRelatorio(ResultadoProcessamento resultado, string caminhoSaida)
 {
     int total = resultado.Aprovadas.Count + resultado.Descartadas.Count + resultado.Erros.Count;
@@ -141,7 +121,7 @@ static void MostrarRelatorio(ResultadoProcessamento resultado, string caminhoSai
     Console.WriteLine($"Arquivo gerado: {caminhoSaida} ({resultado.Aprovadas.Count} nota(s))");
 }
 
-// Escreve uma linha com um rótulo colorido.
+
 static void Escrever(ConsoleColor cor, string rotulo, string texto)
 {
     Console.ForegroundColor = cor;
@@ -156,7 +136,6 @@ static void MostrarErro(string mensagem)
     Escrever(ConsoleColor.Red, "[ERRO] ", mensagem);
 }
 
-// Mantém a janela aberta quando o programa é aberto com duplo clique no .exe.
 static void AguardarEnter()
 {
     Console.WriteLine();
