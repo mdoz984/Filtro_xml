@@ -37,7 +37,6 @@ try
     MostrarRelatorio(resultado, caminhoSaida);
     codigoSaida = 0;
 }
-
 catch (DirectoryNotFoundException)
 {
     MostrarErro($"A pasta {PastaXml} não existe. Crie a pasta e coloque os XMLs das notas nela.");
@@ -57,8 +56,6 @@ catch (IOException ex)
 AguardarEnter();
 return codigoSaida;
 
-
-
 static string? PerguntarSerie()
 {
     while (true)
@@ -67,14 +64,12 @@ static string? PerguntarSerie()
         string? entrada = Console.ReadLine();
         if (entrada is null) return null;
 
-        
         if (int.TryParse(entrada.Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out int numero) && numero <= 999)
             return numero.ToString(CultureInfo.InvariantCulture);
 
         Console.WriteLine("  Série inválida. Digite um número de 0 a 999.");
     }
 }
-
 
 static string? PerguntarCompetencia()
 {
@@ -84,14 +79,12 @@ static string? PerguntarCompetencia()
         string? entrada = Console.ReadLine();
         if (entrada is null) return null;
 
-        
         if (DateTime.TryParseExact(entrada.Trim(), "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime data))
             return data.ToString("yyyy-MM", CultureInfo.InvariantCulture);
 
         Console.WriteLine("  Competência inválida. Use AAAA-MM, por exemplo 2026-09.");
     }
 }
-
 
 static void MostrarRelatorio(ResultadoProcessamento resultado, string caminhoSaida)
 {
@@ -120,7 +113,6 @@ static void MostrarRelatorio(ResultadoProcessamento resultado, string caminhoSai
 
     Console.WriteLine($"Arquivo gerado: {caminhoSaida} ({resultado.Aprovadas.Count} nota(s))");
 }
-
 
 static void Escrever(ConsoleColor cor, string rotulo, string texto)
 {

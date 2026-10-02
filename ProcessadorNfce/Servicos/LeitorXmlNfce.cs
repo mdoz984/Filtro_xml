@@ -6,38 +6,20 @@ using ProcessadorNfce.Modelos;
 
 namespace ProcessadorNfce.Servicos;
 
-
 public sealed class NotaInvalidaException(string mensagem) : Exception(mensagem);
 
-/// <summary>
-/// Lê um arquivo XML de NFC-e e extrai os campos usados no processamento.
-///
-/// Caminho das tags dentro do XML (layout 4.00 da SEFAZ):
-///   infNFe (atributo Id)          -> chave de acesso
-///   infNFe/ide/mod                -> modelo (65 = NFC-e, 55 = NF-e)
-///   infNFe/ide/serie              -> série
-///   infNFe/ide/dhEmi              -> data de emissão (competência)
-///   infNFe/dest/CPF | dest/CNPJ   -> identificação do comprador
-/// </summary>
 public static class LeitorXmlNfce
 {
-    /// <summary>
-    /// Lê o XML e devolve os dados da nota.
-    /// Lança <see cref="XmlException"/> se o arquivo estiver corrompido e
-    /// <see cref="NotaInvalidaException"/> se não for uma NFC-e válida.
-    /// </summary>
     public static NotaFiscal Ler(string caminhoArquivo)
     {
         XDocument documento = CarregarXml(caminhoArquivo);
 
-        // As tags da NFC-e ficam no namespace "http://www.portalfiscal.inf.br/nfe".
-        // Buscamos pelo nome local (LocalName) para funcionar tanto com o XML só da nota (<NFe>)
-        // quanto com o XML autorizado (<nfeProc>), que envolve a nota junto com o protocolo da SEFAZ.
+        // busca pelo nome local pra ignorar o namespace (funciona com <NFe> e com <nfeProc>)
         XElement infNFe = documento.Descendants().FirstOrDefault(e => e.Name.LocalName == "infNFe")
             ?? throw new NotaInvalidaException("tag <infNFe> não encontrada, o arquivo não é uma NFC-e");
 
         XElement? ide = Filho(infNFe, "ide");
-        XElement? dest = Filho(infNFe, "dest"); 
+        XElement? dest = Filho(infNFe, "dest");
 
         return new NotaFiscal
         {
@@ -59,7 +41,7 @@ public static class LeitorXmlNfce
         }
         catch (XmlException erroOriginal)
         {
-
+            // tem emissor que grava em ISO-8859-1 mas declara UTF-8, então tenta de novo como Latin-1
             try
             {
                 string conteudo = File.ReadAllText(caminhoArquivo, Encoding.Latin1);
@@ -85,7 +67,6 @@ public static class LeitorXmlNfce
         return chave;
     }
 
-
     private static DateTimeOffset LerDataEmissao(XElement? ide)
     {
         string texto = TextoObrigatorio(Filho(ide, "dhEmi"), "<ide><dhEmi>");
@@ -101,6 +82,7 @@ public static class LeitorXmlNfce
 
     private static string? Texto(XElement? elemento) =>
         string.IsNullOrWhiteSpace(elemento?.Value) ? null : elemento.Value.Trim();
+
     private static string TextoObrigatorio(XElement? elemento, string descricaoTag) =>
         Texto(elemento) ?? throw new NotaInvalidaException($"tag {descricaoTag} não encontrada ou vazia");
 }

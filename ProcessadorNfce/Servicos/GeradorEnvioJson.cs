@@ -8,7 +8,6 @@ public static class GeradorEnvioJson
 {
     private static readonly JsonSerializerOptions Opcoes = new() { WriteIndented = true };
 
-
     public static void Gerar(IEnumerable<NotaFiscal> notas, string caminhoSaida)
     {
         List<NotaEnvio> envio = notas
@@ -16,7 +15,6 @@ public static class GeradorEnvioJson
             .ToList();
 
         string json = JsonSerializer.Serialize(envio, Opcoes);
-
 
         File.WriteAllText(caminhoSaida, json, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }

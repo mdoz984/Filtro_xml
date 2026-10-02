@@ -8,7 +8,7 @@ public sealed class ProcessadorNotas(string pastaXml)
     public ResultadoProcessamento Processar(FiltroNfce filtro)
     {
         var resultado = new ResultadoProcessamento();
-        var chavesAprovadas = new HashSet<string>(); 
+        var chavesAprovadas = new HashSet<string>();
 
         List<string> arquivos = Directory.GetFiles(pastaXml, "*", SearchOption.TopDirectoryOnly)
             .Where(caminho => Path.GetExtension(caminho).Equals(".xml", StringComparison.OrdinalIgnoreCase))
@@ -31,7 +31,6 @@ public sealed class ProcessadorNotas(string pastaXml)
                 else
                     resultado.Aprovadas.Add(nota);
             }
-            
             catch (XmlException ex)
             {
                 resultado.Erros.Add(new ArquivoIgnorado(nomeArquivo, $"XML corrompido (linha {ex.LineNumber})"));
@@ -46,7 +45,6 @@ public sealed class ProcessadorNotas(string pastaXml)
             }
             catch (IOException)
             {
-                
                 resultado.Erros.Add(new ArquivoIgnorado(nomeArquivo, "erro ao ler o arquivo"));
             }
         }
