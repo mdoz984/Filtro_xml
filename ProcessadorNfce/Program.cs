@@ -5,8 +5,6 @@ using ProcessadorNfce.Servicos;
 
 const string PastaXml = @"C:\XmlNfce";
 
-const string NomeArquivoSaida = "envio.json";
-
 Console.OutputEncoding = Encoding.UTF8;
 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
@@ -31,10 +29,9 @@ try
     var processador = new ProcessadorNotas(PastaXml);
     ResultadoProcessamento resultado = processador.Processar(new FiltroNfce(serie, competencia));
 
-    string caminhoSaida = Path.Combine(PastaXml, NomeArquivoSaida);
-    GeradorEnvioJson.Gerar(resultado.Aprovadas, caminhoSaida);
+    List<ArquivoGerado> arquivosGerados = GeradorEnvioJson.Gerar(resultado.Aprovadas, competencia, PastaXml);
 
-    MostrarRelatorio(resultado, caminhoSaida);
+    MostrarRelatorio(resultado, arquivosGerados);
     codigoSaida = 0;
 }
 catch (DirectoryNotFoundException)
@@ -44,7 +41,7 @@ catch (DirectoryNotFoundException)
 }
 catch (UnauthorizedAccessException)
 {
-    MostrarErro($"Sem permissão para ler os XMLs ou gravar o {NomeArquivoSaida} em {PastaXml}.");
+    MostrarErro($"Sem permissão para ler os XMLs ou gravar o arquivo de envio em {PastaXml}.");
     codigoSaida = 1;
 }
 catch (IOException ex)
@@ -65,7 +62,7 @@ static string? PerguntarSerie()
         if (entrada is null) return null;
 
         if (int.TryParse(entrada.Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out int numero) && numero <= 999)
-            return numero.ToString(CultureInfo.InvariantCulture);
+            return numero.ToString("D3", CultureInfo.InvariantCulture);
 
         Console.WriteLine("  Série inválida. Digite um número de 0 a 999.");
     }
@@ -75,18 +72,18 @@ static string? PerguntarCompetencia()
 {
     while (true)
     {
-        Console.Write("Informe a COMPETÊNCIA no formato AAAA-MM (ex.: 2026-09): ");
+        Console.Write("Informe a COMPETÊNCIA no formato MM/AAAA (ex.: 01/2026): ");
         string? entrada = Console.ReadLine();
         if (entrada is null) return null;
 
-        if (DateTime.TryParseExact(entrada.Trim(), "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime data))
-            return data.ToString("yyyy-MM", CultureInfo.InvariantCulture);
+        if (DateTime.TryParseExact(entrada.Trim(), "MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime data))
+            return data.ToString("MM/yyyy", CultureInfo.InvariantCulture);
 
-        Console.WriteLine("  Competência inválida. Use AAAA-MM, por exemplo 2026-09.");
+        Console.WriteLine("  Competência inválida. Use MM/AAAA, por exemplo 01/2026.");
     }
 }
 
-static void MostrarRelatorio(ResultadoProcessamento resultado, string caminhoSaida)
+static void MostrarRelatorio(ResultadoProcessamento resultado, List<ArquivoGerado> arquivosGerados)
 {
     int total = resultado.Aprovadas.Count + resultado.Descartadas.Count + resultado.Erros.Count;
 
@@ -111,7 +108,11 @@ static void MostrarRelatorio(ResultadoProcessamento resultado, string caminhoSai
     if (total == 0)
         Console.WriteLine("Nenhum arquivo .xml encontrado na pasta.");
 
-    Console.WriteLine($"Arquivo gerado: {caminhoSaida} ({resultado.Aprovadas.Count} nota(s))");
+    if (arquivosGerados.Count == 0)
+        Console.WriteLine("Nenhuma nota aprovada. Nenhum arquivo foi gerado.");
+
+    foreach (ArquivoGerado arquivo in arquivosGerados)
+        Console.WriteLine($"Arquivo gerado: {arquivo.Caminho} ({arquivo.QuantidadeNotas} nota(s))");
 }
 
 static void Escrever(ConsoleColor cor, string rotulo, string texto)

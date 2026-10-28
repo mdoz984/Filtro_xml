@@ -2,6 +2,8 @@ namespace ProcessadorNfce.Modelos;
 
 public sealed record ArquivoIgnorado(string Arquivo, string Motivo);
 
+public sealed record ArquivoGerado(string Caminho, int QuantidadeNotas);
+
 public sealed class ResultadoProcessamento
 {
     public List<NotaFiscal> Aprovadas { get; } = [];

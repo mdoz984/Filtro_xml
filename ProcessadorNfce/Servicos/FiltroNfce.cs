@@ -9,11 +9,22 @@ public sealed class FiltroNfce(string serie, string competencia)
     public string Serie { get; } = serie;
     public string Competencia { get; } = competencia;
 
+    public string? MotivoDescarte(ChaveAcesso chave)
+    {
+        if (chave.Modelo != ModeloNfce)
+            return $"modelo {chave.Modelo}";
+
+        if (chave.Serie != Serie)
+            return $"série {chave.Serie}";
+
+        if (chave.Competencia != Competencia)
+            return $"competência {chave.Competencia}";
+
+        return null;
+    }
+
     public string? MotivoDescarte(NotaFiscal nota)
     {
-        if (nota.Modelo != ModeloNfce)
-            return $"modelo {nota.Modelo}";
-
         if (nota.Serie != Serie)
             return $"série {nota.Serie}";
 
