@@ -14,7 +14,7 @@ public static class LeitorXmlNfce
     {
         XDocument documento = CarregarXml(caminhoArquivo);
 
-        // busca pelo nome local pra ignorar o namespace (funciona com <NFe> e com <nfeProc>)
+        // busca pelo nome local para ignorar o namespace (funciona com <NFe> e com <nfeProc>)
         return documento.Descendants().FirstOrDefault(e => e.Name.LocalName == "infNFe")
             ?? throw new NotaInvalidaException("tag <infNFe> não encontrada, o arquivo não é uma NFC-e");
     }
@@ -44,6 +44,7 @@ public static class LeitorXmlNfce
             Chave = chave,
             Serie = TextoObrigatorio(Filho(ide, "serie"), "<ide><serie>").PadLeft(3, '0'),
             DataEmissao = LerDataEmissao(ide),
+            CStat = LerCStat(infNFe),
             CpfDestinatario = Texto(Filho(dest, "CPF")),
             CnpjDestinatario = Texto(Filho(dest, "CNPJ")),
         };
@@ -55,19 +56,34 @@ public static class LeitorXmlNfce
         {
             return XDocument.Load(caminhoArquivo);
         }
-        catch (XmlException erroOriginal)
+        catch (XmlException)
         {
             // tem emissor que grava em ISO-8859-1 mas declara UTF-8, então tenta de novo como Latin-1
-            try
-            {
-                string conteudo = File.ReadAllText(caminhoArquivo, Encoding.Latin1);
-                return XDocument.Parse(conteudo);
-            }
-            catch (XmlException)
-            {
-                throw erroOriginal;
-            }
+            XDocument? documentoLatin1 = TentarCarregarLatin1(caminhoArquivo);
+            if (documentoLatin1 is not null)
+                return documentoLatin1;
+
+            throw;
         }
+    }
+
+    private static XDocument? TentarCarregarLatin1(string caminhoArquivo)
+    {
+        try
+        {
+            return XDocument.Parse(File.ReadAllText(caminhoArquivo, Encoding.Latin1));
+        }
+        catch (XmlException)
+        {
+            return null;
+        }
+    }
+
+    // o cStat fica fora do <infNFe>, no protocolo: <nfeProc><protNFe><infProt><cStat>
+    private static string? LerCStat(XElement infNFe)
+    {
+        XElement? infProt = infNFe.Document?.Descendants().FirstOrDefault(e => e.Name.LocalName == "infProt");
+        return Texto(Filho(infProt, "cStat"));
     }
 
     private static DateTimeOffset LerDataEmissao(XElement? ide)

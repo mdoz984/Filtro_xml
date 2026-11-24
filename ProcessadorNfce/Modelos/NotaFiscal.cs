@@ -12,6 +12,9 @@ public sealed class NotaFiscal
 
     public required DateTimeOffset DataEmissao { get; init; }
 
+    // cStat 100 = autorizado o uso
+    public string? CStat { get; init; }
+
     public string? CpfDestinatario { get; init; }
 
     public string? CnpjDestinatario { get; init; }

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Processador de NFC-e</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230e5a74'/%3E%3Cpath d='M9 7h14v18l-2.3-1.6L18.3 25 16 23.4 13.7 25l-2.4-1.6L9 25z' fill='%23fff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+  <header class="topo">
+    <div class="topo__conteudo">
+      <h1>Processador de NFC-e</h1>
+      <p>Gera o arquivo de envio só com as notas de consumidor final autorizadas pela SEFAZ.</p>
+    </div>
+  </header>
+
+  <main class="pagina">
+    <section class="entrada" aria-labelledby="titulo-entrada">
+      <h2 id="titulo-entrada">Notas a serem lidas</h2>
+      <p class="entrada__frase">Informe a série e a competência das notas que deseja processar.</p>
+
+      <form id="form" class="formulario" novalidate>
+        <div class="campo campo--curto">
+          <label for="serie">Série</label>
+          <input id="serie" name="serie" type="text" inputmode="numeric" maxlength="3" autocomplete="off" placeholder="1" required>
+        </div>
+        <div class="campo campo--curto">
+          <label for="competencia">Competência</label>
+          <input id="competencia" name="competencia" type="text" inputmode="numeric" maxlength="7" autocomplete="off" placeholder="MM/AAAA" required>
+        </div>
+        <button id="botao-processar" class="botao botao--principal" type="submit">Processar notas</button>
+        <p id="mensagem-erro" class="mensagem-erro" role="alert" hidden></p>
+      </form>
+    </section>
+
+    <section id="resultado" class="resultado" aria-live="polite" aria-label="Resultado do processamento"></section>
+  </main>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

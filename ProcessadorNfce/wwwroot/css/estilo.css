@@ -1,0 +1,261 @@
+/* Fontes locais do Windows, para funcionar sem internet na apresentação */
+
+:root {
+  --fundo: #e9eef2;
+  --tinta: #17222d;
+  --tinta-suave: #52616f;
+  --linha: #c9d3dc;
+  --papel: #ffffff;
+  --primaria: #0e5a74;
+  --primaria-escura: #0a4357;
+
+  --enviada: #1b7a4b;
+  --enviada-fundo: #e2f3ea;
+  --descartada: #8a5300;
+  --descartada-fundo: #fbefd9;
+  --erro: #b3261e;
+  --erro-fundo: #fbe4e2;
+
+  --fonte: "Bahnschrift", "DIN Alternate", "Segoe UI", system-ui, sans-serif;
+  --mono: "Cascadia Mono", "Cascadia Code", Consolas, "Courier New", monospace;
+
+  --raio: 6px;
+}
+
+* { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+html { font-size: 106.25%; } /* 17px, para leitura no projetor */
+
+body {
+  margin: 0;
+  background: var(--fundo);
+  color: var(--tinta);
+  font-family: var(--fonte);
+  line-height: 1.5;
+}
+
+h1, h2 { margin: 0; line-height: 1.15; }
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+:focus-visible {
+  outline: 3px solid var(--primaria);
+  outline-offset: 2px;
+}
+
+.topo {
+  background: var(--primaria);
+  color: #fff;
+}
+
+.topo__conteudo {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 1.25rem;
+  text-align: center;
+}
+
+.topo h1 {
+  font-size: 2.1rem;
+  font-weight: 700;
+  font-stretch: 87.5%;
+  letter-spacing: -0.01em;
+}
+
+.topo p {
+  margin: 0.25rem auto 0;
+  color: #d4e6ee;
+  max-width: 60ch;
+}
+
+.pagina {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.entrada { text-align: center; }
+.entrada h2 { margin-bottom: 0.3rem; }
+.entrada__frase { margin: 0 auto 1rem; color: var(--tinta-suave); max-width: 60ch; }
+.formulario { text-align: left; }
+
+.formulario {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.75rem;
+  border-bottom: 1px solid var(--linha);
+}
+
+.campo { display: flex; flex-direction: column; gap: 0.3rem; }
+.campo--curto { flex: 0 0 9rem; }
+
+.campo label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--tinta-suave);
+}
+
+.campo input {
+  font: inherit;
+  font-size: 1.05rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  background: var(--papel);
+  color: var(--tinta);
+  min-width: 0;
+}
+
+.campo input:focus-visible { outline-offset: 0; border-color: var(--primaria); }
+
+.campo--curto input { font-family: var(--mono); }
+
+.botao {
+  font: inherit;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+  border-radius: var(--raio);
+  border: 1px solid var(--primaria);
+  background: var(--papel);
+  color: var(--primaria);
+  cursor: pointer;
+}
+
+.botao:hover { background: #dcebf1; }
+
+.botao--principal {
+  background: var(--primaria);
+  color: #fff;
+  font-size: 1.05rem;
+  padding: 0.6rem 1.4rem;
+}
+
+.botao--principal:hover { background: var(--primaria-escura); }
+.botao:disabled { opacity: 0.6; cursor: progress; }
+
+.mensagem-erro {
+  flex-basis: 100%;
+  max-width: 40rem;
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  border-left: 4px solid var(--erro);
+  background: var(--erro-fundo);
+  color: var(--erro);
+  font-weight: 600;
+}
+
+.vazio { color: var(--tinta-suave); margin: 0; max-width: 60ch; }
+
+.resumo__titulo { font-size: 1.05rem; font-weight: 600; margin: 0; }
+.resumo__meta { margin: 0.15rem 0 0.9rem; color: var(--tinta-suave); font-size: 0.92rem; }
+
+.legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.4rem;
+  margin: 0.4rem 0 1.25rem;
+  padding: 0;
+  list-style: none;
+}
+
+.legenda li { display: flex; align-items: baseline; gap: 0.4rem; }
+.legenda strong { font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.legenda .enviada strong { color: var(--enviada); }
+.legenda .descartada strong { color: var(--descartada); }
+.legenda .erro strong { color: var(--erro); }
+
+.tabela-rolagem { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--papel);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  font-size: 0.92rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.55rem 0.7rem;
+  border-bottom: 1px solid var(--linha);
+  vertical-align: top;
+}
+
+th { font-weight: 600; color: var(--tinta-suave); background: #f4f7f9; }
+tr:last-child > td { border-bottom: none; }
+
+.etiqueta {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.etiqueta.enviada { background: var(--enviada-fundo); color: var(--enviada); }
+.etiqueta.descartada { background: var(--descartada-fundo); color: var(--descartada); }
+.etiqueta.erro { background: var(--erro-fundo); color: var(--erro); }
+
+.arquivo-nome { word-break: break-all; }
+
+.chave-botao {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  background: none;
+  border: none;
+  border-bottom: 1px dashed var(--primaria);
+  padding: 0;
+  color: var(--tinta);
+  cursor: pointer;
+  text-align: left;
+  line-height: 1.6;
+}
+
+.chave-botao[aria-expanded="true"] { color: var(--primaria); }
+.sem-chave { color: var(--tinta-suave); }
+
+.composicao td { background: #f4f7f9; }
+
+.composicao__campos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.composicao__campos li {
+  display: flex;
+  flex-direction: column;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--linha);
+  border-radius: 4px;
+  background: var(--papel);
+}
+
+.composicao__campos .valor { font-family: var(--mono); font-size: 0.9rem; }
+.composicao__campos .nome { font-size: 0.75rem; color: var(--tinta-suave); }
+.composicao__campos li.destaque { border-color: var(--primaria); }
+.composicao__campos li.destaque .valor { color: var(--primaria); font-weight: 700; }
+
+@media (max-width: 860px) {
+  .campo--curto { flex: 1 1 8rem; }
+  .botao--principal { flex: 1 1 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; transition: none !important; }
+}

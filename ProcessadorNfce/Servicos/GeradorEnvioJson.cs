@@ -12,13 +12,13 @@ public static class GeradorEnvioJson
     {
         var arquivos = new List<ArquivoGerado>();
 
-        // o nome usa só os 5 primeiros dígitos do CNPJ, então matriz e filial com o mesmo início caem no mesmo arquivo
+        // o nome usa só os 5 primeiros dígitos do CNPJ: emitentes com o mesmo início caem no mesmo arquivo
         foreach (IGrouping<string, NotaFiscal> grupo in notas.GroupBy(nota => nota.Chave.Cnpj[..5]).OrderBy(g => g.Key))
         {
             List<NotaEnvio> envio = grupo
                 .OrderBy(nota => nota.Chave.NumeroNota, StringComparer.Ordinal)
                 .ThenBy(nota => nota.Chave.Digitos, StringComparer.Ordinal)
-                .Select((nota, indice) => new NotaEnvio(indice + 1, nota.Chave.Digitos, nota.Competencia))
+                .Select(nota => new NotaEnvio(nota.Chave.Digitos, nota.Serie, nota.Competencia))
                 .ToList();
 
             string nomeArquivo = $"{competencia.Replace("/", "")}{grupo.Key}.txt";
@@ -26,7 +26,7 @@ public static class GeradorEnvioJson
             string json = JsonSerializer.Serialize(envio, Opcoes);
 
             File.WriteAllText(caminhoSaida, json, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
-            arquivos.Add(new ArquivoGerado(caminhoSaida, envio.Count));
+            arquivos.Add(new ArquivoGerado(nomeArquivo, caminhoSaida, envio.Count, json));
         }
 
         return arquivos;

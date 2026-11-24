@@ -5,6 +5,7 @@ namespace ProcessadorNfce.Servicos;
 public sealed class FiltroNfce(string serie, string competencia)
 {
     private const string ModeloNfce = "65";
+    private const string CStatAutorizada = "100";
 
     public string Serie { get; } = serie;
     public string Competencia { get; } = competencia;
@@ -12,7 +13,7 @@ public sealed class FiltroNfce(string serie, string competencia)
     public string? MotivoDescarte(ChaveAcesso chave)
     {
         if (chave.Modelo != ModeloNfce)
-            return $"modelo {chave.Modelo}";
+            return $"modelo {chave.Modelo}, não é NFC-e";
 
         if (chave.Serie != Serie)
             return $"série {chave.Serie}";
@@ -25,6 +26,12 @@ public sealed class FiltroNfce(string serie, string competencia)
 
     public string? MotivoDescarte(NotaFiscal nota)
     {
+        if (nota.CStat is null)
+            return "sem protocolo de autorização (tag <cStat> não encontrada)";
+
+        if (nota.CStat != CStatAutorizada)
+            return $"cStat {nota.CStat}, nota não autorizada";
+
         if (nota.Serie != Serie)
             return $"série {nota.Serie}";
 
@@ -32,10 +39,10 @@ public sealed class FiltroNfce(string serie, string competencia)
             return $"competência {nota.Competencia}";
 
         if (nota.CpfDestinatario is not null)
-            return "tem CPF";
+            return "tem CPF do comprador";
 
         if (nota.CnpjDestinatario is not null)
-            return "tem CNPJ";
+            return "tem CNPJ do comprador";
 
         return null;
     }

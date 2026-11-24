@@ -23,11 +23,12 @@ public sealed class ProcessadorNotas(string pastaXml)
         {
             string nomeArquivo = Path.GetFileName(caminho);
             Match chaveNome = ChaveNoNome.Match(nomeArquivo);
+            string? chaveDoNome = chaveNome.Success ? chaveNome.Value : null;
 
             if (chaveNome.Success && ChaveAcesso.MotivoInvalida(chaveNome.Value) is null
                 && filtro.MotivoDescarte(new ChaveAcesso(chaveNome.Value)) is string motivoNome)
             {
-                resultado.Descartadas.Add(new ArquivoIgnorado(nomeArquivo, $"{motivoNome} (chave no nome do arquivo)"));
+                resultado.Descartadas.Add(new ArquivoIgnorado(nomeArquivo, $"{motivoNome} (chave no nome do arquivo)", chaveNome.Value));
                 continue;
             }
 
@@ -42,7 +43,7 @@ public sealed class ProcessadorNotas(string pastaXml)
                 string? motivoChave = filtro.MotivoDescarte(chave);
                 if (motivoChave is not null)
                 {
-                    resultado.Descartadas.Add(new ArquivoIgnorado(nomeArquivo, motivoChave));
+                    resultado.Descartadas.Add(new ArquivoIgnorado(nomeArquivo, motivoChave, chave.Digitos));
                     continue;
                 }
 
@@ -50,27 +51,27 @@ public sealed class ProcessadorNotas(string pastaXml)
                 string? motivo = filtro.MotivoDescarte(nota);
 
                 if (motivo is not null)
-                    resultado.Descartadas.Add(new ArquivoIgnorado(nomeArquivo, motivo));
+                    resultado.Descartadas.Add(new ArquivoIgnorado(nomeArquivo, motivo, chave.Digitos));
                 else if (!chavesAprovadas.Add(chave.Digitos))
-                    resultado.Descartadas.Add(new ArquivoIgnorado(nomeArquivo, "nota duplicada"));
+                    resultado.Descartadas.Add(new ArquivoIgnorado(nomeArquivo, "nota duplicada", chave.Digitos));
                 else
                     resultado.Aprovadas.Add(nota);
             }
             catch (XmlException ex)
             {
-                resultado.Erros.Add(new ArquivoIgnorado(nomeArquivo, $"XML corrompido (linha {ex.LineNumber})"));
+                resultado.Erros.Add(new ArquivoIgnorado(nomeArquivo, $"XML corrompido (linha {ex.LineNumber})", chaveDoNome));
             }
             catch (NotaInvalidaException ex)
             {
-                resultado.Erros.Add(new ArquivoIgnorado(nomeArquivo, ex.Message));
+                resultado.Erros.Add(new ArquivoIgnorado(nomeArquivo, ex.Message, chaveDoNome));
             }
             catch (UnauthorizedAccessException)
             {
-                resultado.Erros.Add(new ArquivoIgnorado(nomeArquivo, "sem permissão de leitura"));
+                resultado.Erros.Add(new ArquivoIgnorado(nomeArquivo, "sem permissão de leitura", chaveDoNome));
             }
             catch (IOException)
             {
-                resultado.Erros.Add(new ArquivoIgnorado(nomeArquivo, "erro ao ler o arquivo"));
+                resultado.Erros.Add(new ArquivoIgnorado(nomeArquivo, "erro ao ler o arquivo", chaveDoNome));
             }
         }
 

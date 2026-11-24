@@ -2,3 +2,8 @@ bin/
 obj/
 .vs/
 *.user
+
+# banco SQLite local (criado ao rodar o programa)
+*.db
+*.db-shm
+*.db-wal
